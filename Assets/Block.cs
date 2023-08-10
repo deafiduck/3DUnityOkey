@@ -9,7 +9,7 @@ public class Block : MonoBehaviour
     public string number = "";
     public bool isJoker = false;
     public bool Draggable = true;
-  
+    public float smoathDamping=5f;
     SpriteRenderer spriteRenderer;
 
 
@@ -39,7 +39,7 @@ public class Block : MonoBehaviour
     {
         if (_isMoveWithMouse)
         {
-            this.transform.position = Vector3.Lerp(this.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).GetPoint(2), Time.deltaTime*0.7f);
+            this.transform.position = Vector3.Lerp(this.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).GetPoint(5), Time.deltaTime*1.9f);
         }
         
       
