@@ -4,51 +4,87 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-
+    [SerializeField]
+    private Transform[] ch1Places; // 32 adet boþ alanýn Transform'larý
+    [SerializeField]
+     public static GameObject tas;
+    private Vector2 initialPosition;
+    private Vector2 mousePosition;
+    private float deltaX, deltaY;
+    public static bool locked;
+    private string number="";
     public string type = "";
-    public string number = "";
-    public bool isJoker = false;
-    public bool Draggable = true;
-    public float smoathDamping=5f;
-    SpriteRenderer spriteRenderer;
+    public bool isJoker;
 
+    public int no;
+    public int tip;
 
-    private bool _isMoveWithMouse = false;
-    //test amaçlý true
-
-    void Start()
+    
+    private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        initialPosition = transform.position;
     }
-    private void OnMouseUp() 
+
+    private static void Random()
     {
-        if (Draggable)
-        {
-            _isMoveWithMouse = false;
-        }
+
+        //i=0 kýrmýzý,i=1 mavi;i=2 siyah, i=3 sarý
+
+        int randomIndex = UnityEngine.Random.Range(0, 4);
+
+
     }
     private void OnMouseDown()
     {
-        if (Draggable) 
+        if (!locked)
         {
-            _isMoveWithMouse = true;
+            deltaX = Camera.main.ScreenToWorldPoint(Input.mousePosition).x - transform.position.x;
+            deltaY = Camera.main.ScreenToWorldPoint(Input.mousePosition).y - transform.position.y;
         }
-       
-    }
-    private void Update()
-    {
-        if (_isMoveWithMouse)
-        {
-            this.transform.position = Vector3.Lerp(this.transform.position, Camera.main.ScreenPointToRay(Input.mousePosition).GetPoint(5), Time.deltaTime*1.9f);
-        }
-        
-      
     }
 
-    public void SetBlocksprite(Sprite sprite)
+    private void OnMouseDrag()
     {
-        spriteRenderer.sprite = sprite;
-        type = sprite.name.Split('_')[0];
-        number = sprite.name.Split('_')[1];
+        if (!locked)
+        {
+            mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            transform.position = new Vector2(mousePosition.x - deltaX, mousePosition.y - deltaY);
+        }
+    }
+
+    private void OnMouseUp()
+    {
+        if (!locked)
+        {
+            Transform closestPlace = GetClosestPlace();// En yakýn boþ alaný bul
+
+            if (closestPlace != null && Vector2.Distance(transform.position, closestPlace.position) <= 0.5f)
+            {
+                transform.position = new Vector2(transform.position.x, closestPlace.position.y);
+                type = tas.tag;
+                Debug.Log(type);
+                //locked = true;// Nesneyi en yakýn boþ alana kilitli hale getir
+            }
+           
+        }
+    }
+
+    private Transform GetClosestPlace()
+    {
+        Transform closestPlace = null;
+        float minDistance = float.MaxValue;
+
+        foreach (Transform place in ch1Places)
+        {
+            float distance = Vector2.Distance(transform.position, place.position);
+
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestPlace = place;
+            }
+        }
+
+        return closestPlace;
     }
 }
